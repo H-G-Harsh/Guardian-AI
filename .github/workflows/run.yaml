@@ -1,0 +1,37 @@
+name: Guardian Agent Run
+
+
+on:
+schedule:
+- cron: '*/10 * * * *' # Every 10 minutes
+workflow_dispatch:
+
+
+jobs:
+run-agent:
+runs-on: ubuntu-latest
+
+
+steps:
+- uses: actions/checkout@v4
+
+
+- name: Set up Python
+- uses: actions/setup-python@v5
+with:
+python-version: '3.12'
+
+
+- name: Install deps
+run: |
+pip install -r requirements.txt
+
+
+- name: Run Guardian Agent
+env:
+PORTIA_API_KEY: ${{ secrets.PORTIA_API_KEY }}
+GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+PARENT_EMAIL: ${{ secrets.PARENT_EMAIL }}
+SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
+CI: true
+run: python agent.py
